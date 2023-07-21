@@ -9,7 +9,7 @@ address=/{{ $host }}.{{ $tld }}/{{ $network.IP }}
 {{ end }}
 
 {{ $CurrentContainer := where $ "ID" .Docker.CurrentContainerID | first }}
-{{ $primaryTld := (or (index $CurrentContainer.Labels "dns.tld") ($CurrentContainer.Env.DOMAIN_TLD) "local") }}
+{{ $primaryTld := (or (index $CurrentContainer.Labels "dns.tld") ($CurrentContainer.Env.DOMAIN_TLD) "docker") }}
 
 {{ range $index, $container := (whereLabelExists . "dns.record") }}
     {{ with $container }}
