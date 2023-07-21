@@ -1,0 +1,23 @@
+{{ define "host" }}
+    {{ $host := .Host }}
+    {{ $tld := .Tld }}
+        {{ range $index, $network := .Container.Networks }}
+            {{ if ne $network.IP "" }}
+address=/{{ $host }}.{{ $tld }}/{{ $network.IP }}
+            {{ end }}
+        {{ end }}
+{{ end }}
+
+{{ $CurrentContainer := where $ "ID" .Docker.CurrentContainerID | first }}
+{{ $primaryTld := (or (index $CurrentContainer.Labels "dns.tld") ($CurrentContainer.Env.DOMAIN_TLD) "local") }}
+
+{{ range $index, $container := (whereLabelExists . "dns.record") }}
+    {{ with $container }}
+        {{ $tld := (or (index .Labels "dns.tld") $primaryTld) }}
+        {{ range $index, $service := split (index .Labels "dns.record") ","}}
+          {{ with $service  }}
+              {{ template "host" (dict "Container" $container "Host" (print $service) "Tld" $tld) }}
+          {{ end }}
+        {{ end }}
+    {{ end }}
+{{ end }}

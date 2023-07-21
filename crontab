@@ -1,0 +1,2 @@
+# Run every 15 seconds
+*/15 * * * * * * /usr/local/bin/resolv-conf-fixer.sh
